@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Market Basket Analysis and Retail Insigths</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>🛒 Market Basket Analysis and Retail Insights</h1>
+
+<form method="POST" class="search-box">
+
+<input type="text" name="product"
+placeholder="Search product (example: yogurt)"
+value="{{search_product}}">
+
+<button type="submit">Search</button>
+
+</form>
+
+</div>
+
+
+<div class="container">
+
+{% if error %}
+<p class="error">{{error}}</p>
+{% endif %}
+
+
+<!-- DASHBOARD -->
+
+<div class="dashboard">
+
+<div class="dash-card">
+<h3>Total Transactions</h3>
+<p>{{total_transactions}}</p>
+</div>
+
+<div class="dash-card">
+<h3>Total Products</h3>
+<p>{{total_products}}</p>
+</div>
+
+<div class="dash-card">
+<h3>Association Rules</h3>
+<p>{{total_rules}}</p>
+</div>
+
+</div>
+
+
+
+<!-- RECOMMENDATION CARDS -->
+
+<h2>Recommended Products</h2>
+
+<div class="product-grid">
+
+{% for r in recommendations %}
+
+<div class="card
+{% if r.lift > 3 %}
+strong
+{% elif r.lift > 1.5 %}
+medium
+{% else %}
+weak
+{% endif %}
+">
+
+<h3>{{r.consequents}}</h3>
+
+<p>If customer buys</p>
+
+<b>{{r.antecedents}}</b>
+
+<p>Lift Score: {{ "%.2f"|format(r.lift) }}</p>
+
+<button onclick="viewProduct('{{r.consequents}}')">
+View Product
+</button>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<!-- RECOMMENDATION GRAPH BELOW CARDS -->
+
+{% if rec_graph %}
+
+<h2>Recommendation Graph</h2>
+
+<div class="graphs">
+
+{{rec_graph|safe}}
+
+</div>
+
+{% endif %}
+
+
+
+<!-- ASSOCIATION RULES -->
+
+<h2>Association Rules</h2>
+
+<table>
+
+<tr>
+<th>Antecedents</th>
+<th>Consequents</th>
+<th>Support</th>
+<th>Confidence</th>
+<th>Lift</th>
+</tr>
+
+{% for r in rules %}
+
+<tr>
+<td>{{r.antecedents}}</td>
+<td>{{r.consequents}}</td>
+<td>{{ "%.4f"|format(r.support) }}</td>
+<td>{{ "%.4f"|format(r.confidence) }}</td>
+<td>{{ "%.4f"|format(r.lift) }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+
+
+<!-- SALES ANALYTICS -->
+
+<h2>Sales Analytics</h2>
+
+<div class="graphs">
+
+{{top_graph|safe}}
+
+{{month_graph|safe}}
+
+{{scatter_graph|safe}}
+
+</div>
+
+
+
+<!-- PRODUCT NETWORK -->
+
+<h2>Product Relationship Network</h2>
+
+<div class="graphs">
+
+{{network_graph|safe}}
+
+</div>
+
+
+</div>
+
+
+<script>
+
+function viewProduct(product){
+
+window.location.href="/product/"+product
+
+}
+
+</script>
+
+</body>
+</html>
